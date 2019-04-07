@@ -12,6 +12,14 @@ class TodoScreen extends StatefulWidget {
 class TodoScreenState extends State<TodoScreen>{
   
   TodoProvider todo = TodoProvider();
+  List<Todo> allTask;
+  int _tapState = 0;
+  void updateDB(int n){
+    setState(() {
+      todo.open("todo.db");
+      _tapState = n;
+    });
+  }
 
   Widget build(BuildContext context){
     //Task App Bar
@@ -37,13 +45,14 @@ class TodoScreenState extends State<TodoScreen>{
         IconButton(
           icon: Icon(Icons.delete),
           color: Colors.white,
-          onPressed: (){
-            setState(() async{
-              await todo.delete();
-              await todo.open("todo.db");
+          onPressed: ()async{
+            await todo.delete();
+            await todo.open("todo.db");
+            setState(() {
+              allTask = [];
             });
-            
-            },
+
+          },
         ),
       ],
     );
@@ -61,7 +70,7 @@ class TodoScreenState extends State<TodoScreen>{
     );
 
     //Task List
-    List<Todo> allTask;
+    
     Container taskList = new Container(
       child: FutureBuilder(
         future: todo.getTodo(false),
@@ -126,16 +135,10 @@ class TodoScreenState extends State<TodoScreen>{
         },
       ),
     );
-
-
-    void updateDB(int n){
-      setState(() {
-        todo.open("todo.db");
-      });
-    }
     
     return DefaultTabController(
       length: 2,
+      initialIndex: _tapState,
       child: Scaffold(
         appBar: new AppBar(
           backgroundColor: Colors.redAccent,
@@ -157,7 +160,8 @@ class TodoScreenState extends State<TodoScreen>{
         ) 
       ),
     );
-    
   }
+
+
 }
 
