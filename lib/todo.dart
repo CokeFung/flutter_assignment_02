@@ -13,6 +13,7 @@ class TodoScreenState extends State<TodoScreen>{
   
   TodoProvider todo = TodoProvider();
   List<Todo> allTask;
+  String noData = "No data found..";
   int _tapState = 0;
   void updateDB(int n){
     setState(() {
@@ -41,7 +42,7 @@ class TodoScreenState extends State<TodoScreen>{
     Row comAppBar = new Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Completed'),
+        Text('Todo'),
         IconButton(
           icon: Icon(Icons.delete),
           color: Colors.white,
@@ -79,7 +80,7 @@ class TodoScreenState extends State<TodoScreen>{
           if(snapshot.hasData){
             for (var i in snapshot.data) allTask.add(i);
           }
-          return allTask.length == 0 ? Center(child:Text("No subject")): ListView.builder(
+          return allTask.length == 0 ? Center(child:Text(noData)): ListView.builder(
             itemCount: allTask.length,
             itemBuilder: (BuildContext context, int ind){
               return Column(
@@ -112,7 +113,7 @@ class TodoScreenState extends State<TodoScreen>{
           if(snapshot.hasData){
             for (var i in snapshot.data) allTask.add(i);
           }
-          return allTask.length == 0 ? Center(child:Text("No subject")): ListView.builder(
+          return allTask.length == 0 ? Center(child:Text(noData)): ListView.builder(
             itemCount: allTask.length,
             itemBuilder: (BuildContext context, int ind){
               return Column(
