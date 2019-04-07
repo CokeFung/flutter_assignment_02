@@ -63,6 +63,7 @@ class TodoProvider{
 
 
   Future<List<Todo>> getTodo(bool isDone) async{
+    await this.open("todo.db");
     List<Map> maps = await db.query(tableTodo,
       columns: [columnId, columnTitle, columnDone],
     );
@@ -78,8 +79,8 @@ class TodoProvider{
     return null;
   }
 
-  Future<int> delete(int id) async{
-    return await db.delete(tableTodo, where: "$columnId = ?", whereArgs: [id]);
+  Future<int> delete() async{
+    return await db.delete(tableTodo, where: "$columnDone = ?", whereArgs: [true]);
   }
 
   Future<int> update(Todo todo) async{

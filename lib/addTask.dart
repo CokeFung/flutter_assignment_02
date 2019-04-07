@@ -34,7 +34,7 @@ class AddTaskScreenState extends State<AddTaskScreen> {
 
     //validate function
     
-    void _ValidateInput(){
+    void _ValidateInput() async {
       _formKey.currentState.validate();
       if (_subjectName.isEmpty){
         _scaffoldKey.currentState.showSnackBar(
@@ -44,7 +44,7 @@ class AddTaskScreenState extends State<AddTaskScreen> {
         );
       }
       else{
-        todo.open("todo.db");
+        await todo.open("todo.db");
         Todo temp = new Todo();
         temp.title = _subjectName;
         temp.done = false;

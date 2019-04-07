@@ -12,7 +12,7 @@ class TodoScreen extends StatefulWidget {
 class TodoScreenState extends State<TodoScreen>{
   
   TodoProvider todo = TodoProvider();
-  
+
   Widget build(BuildContext context){
     //Task App Bar
     Row taskAppBar = new Row(
@@ -38,8 +38,12 @@ class TodoScreenState extends State<TodoScreen>{
           icon: Icon(Icons.delete),
           color: Colors.white,
           onPressed: (){
+            setState(() async{
+              await todo.delete();
+              await todo.open("todo.db");
+            });
             
-          },
+            },
         ),
       ],
     );
@@ -74,10 +78,44 @@ class TodoScreenState extends State<TodoScreen>{
                   ListTile(
                     title: new Text(allTask[ind].title),
                     trailing: Checkbox(
-                      onChanged: (bool done){
-                        setState(() { allTask[ind].done = true;});
+                      value: allTask[ind].done,
+                      onChanged: (bool isCheck) async {
+                        setState(() { allTask[ind].done = isCheck;});
                         todo.update(allTask[ind]);
-                        setState(() {});
+                        todo.open("todo.db");
+                      },
+                    ),
+                  )
+                ],
+              );
+            },
+          );
+        },
+      ),
+    );
+
+    //Task List
+    Container doneList = new Container(
+      child: FutureBuilder(
+        future: todo.getTodo(true),
+        builder: (BuildContext context, AsyncSnapshot <List<Todo>> snapshot){
+          allTask = [];
+          if(snapshot.hasData){
+            for (var i in snapshot.data) allTask.add(i);
+          }
+          return allTask.length == 0 ? Center(child:Text("No subject")): ListView.builder(
+            itemCount: allTask.length,
+            itemBuilder: (BuildContext context, int ind){
+              return Column(
+                children: <Widget>[
+                  ListTile(
+                    title: new Text(allTask[ind].title),
+                    trailing: Checkbox(
+                      value: allTask[ind].done,
+                      onChanged: (bool isCheck) async {
+                        setState(() { allTask[ind].done = isCheck;});
+                        todo.update(allTask[ind]);
+                        todo.open("todo.db");
                       },
                     ),
                   )
@@ -114,7 +152,7 @@ class TodoScreenState extends State<TodoScreen>{
         body: TabBarView(
           children: <Widget>[
             taskList,
-            Center(child: Text('Conmpleteterefr')),
+            doneList,
           ],
         ) 
       ),
@@ -123,73 +161,3 @@ class TodoScreenState extends State<TodoScreen>{
   }
 }
 
-/*
-class TodoScreen extends StatelessWidget {
-  TodoProvider todo = TodoProvider();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Todo Screen"),
-      ),
-      body: Column(
-        children: <Widget>[
-          RaisedButton(
-            child: Text("Open DB"),
-            onPressed: () {
-              todo.open("todo.db");
-            },
-          ),
-          RaisedButton(
-            child: Text("Insert"),
-            onPressed: () async {
-              Todo data = Todo();
-              data.title = "test";
-              data.done = false;
-              Todo result = await todo.insert(data);
-              print(result.title);
-              // todo.insert(data).then((result){
-
-              // });
-            },
-          ),
-          RaisedButton(
-            child: Text("Get"),
-            onPressed: () async {
-              List<Todo> data = await todo.getTodo(false);
-              for(int i =0; i< data.length;i++) print(data[i].toString());
-            },
-          ),
-          RaisedButton(
-            child: Text("Update"),
-            onPressed: () async {
-              Todo newData = Todo();
-              newData.id = 1;
-              newData.title = 'New Test';
-              newData.done = true;
-
-              int result = await todo.update(newData);
-              print(result);
-            },
-          ),
-          RaisedButton(
-            child: Text("delete"),
-            onPressed: () async {
-              int result = await todo.delete(1);
-              print(result);
-            },
-          ),
-          RaisedButton(
-            child: Text("Close DB"),
-            onPressed: () {
-             todo.close();
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-*/
