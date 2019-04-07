@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_assugnment_02/main.dart';
-import 'package:flutter_assugnment_02/object/todo.dart';
+import 'package:flutter_assugnment_02/object/Database.dart';
 class AddTaskScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState(){
@@ -14,8 +14,10 @@ class AddTaskScreenState extends State<AddTaskScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   String _subjectName = '';
   
-  Widget build(BuildContext context){
+  TodoProvider todo = new TodoProvider();
 
+
+  Widget build(BuildContext context){
     //Text field of subject
     TextFormField subject = new TextFormField(
       decoration: const InputDecoration(
@@ -31,6 +33,7 @@ class AddTaskScreenState extends State<AddTaskScreen> {
     );
 
     //validate function
+    
     void _ValidateInput(){
       _formKey.currentState.validate();
       if (_subjectName.isEmpty){
@@ -41,6 +44,12 @@ class AddTaskScreenState extends State<AddTaskScreen> {
         );
       }
       else{
+        todo.open("todo.db");
+        Todo temp = new Todo();
+        temp.title = _subjectName;
+        temp.done = false;
+        todo.insert(temp);
+        print("Added");
         Navigator.of(context).pop();
       }
     }
